@@ -63,12 +63,12 @@ namespace MegaOverhaul.Modules
                 Game1.player.stamina += Math.Abs(diff / Config.EnergyLossDivisor);
 
                 // print character energy level if different
-                ModEntry.LogDebug($"{Game1.player.Name} : {Game1.player.stamina} / {Game1.player.maxStamina.Value} energy. diff:{diff}");
+                //ModEntry.LogDebug($"{Game1.player.Name} : {Game1.player.stamina} / {Game1.player.maxStamina.Value} energy. diff:{diff}");
             }
             else if (_curEnergy > _lasEnergy)
             {
                 float diff = _curEnergy - _lasEnergy;
-                ModEntry.LogDebug($"{Game1.player.Name} : {Game1.player.stamina} / {Game1.player.maxStamina.Value} energy. diff:{diff}");
+                //ModEntry.LogDebug($"{Game1.player.Name} : {Game1.player.stamina} / {Game1.player.maxStamina.Value} energy. diff:{diff}");
             }
             //else
                 //ModEntry.LogDebug($"{Game1.player.Name} : {Game1.player.stamina} / {Game1.player.maxStamina.Value} energy. diff:0");

@@ -42,6 +42,7 @@ namespace MegaOverhaul
         private void LoadModules()
         {
             ModEntry.energy = new Energy(this);
+            energy.Activate();
         }
 
         private void SaveModOptions(object sender, ReturnedToTitleEventArgs e)

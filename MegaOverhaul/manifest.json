@@ -1,10 +1,10 @@
 ﻿{
   "Name": "MegaOverhaul",
   "Author": "MegaPinata",
-  "Version": "0.0.1-alpha",
+  "Version": "0.0.1",
   "Description": "MegaPinata's personal QoL changes.'",
   "UniqueID": "MegaPinata.MegaOverhaul",
   "EntryDll": "MegaOverhaul.dll",
   "MinimumApiVersion": "3.0.0",
-  "UpdateKeys": []
+  "UpdateKeys": [ "GitHub:MegaPinata/MegaOverhaul" ]
 }
