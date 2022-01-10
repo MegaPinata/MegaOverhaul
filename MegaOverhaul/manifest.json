@@ -1,7 +1,7 @@
 ﻿{
   "Name": "MegaOverhaul",
   "Author": "MegaPinata",
-  "Version": "0.0.1",
+  "Version": "0.0.2",
   "Description": "MegaPinata's personal QoL changes.'",
   "UniqueID": "MegaPinata.MegaOverhaul",
   "EntryDll": "MegaOverhaul.dll",
