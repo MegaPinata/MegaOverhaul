@@ -47,7 +47,7 @@ namespace MegaOverhaul
 
         private void UnloadModules()
         {
-            EnergyMod.Deactivate();
+            ModEntry.EnergyMod.Deactivate();
             ModEntry.EnergyMod = null;
         }
 

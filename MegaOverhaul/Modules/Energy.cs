@@ -15,9 +15,6 @@ namespace MegaOverhaul.Modules
         private float _curEnergy = 0;
         private float _lasEnergy = 0;
 
-        private int _curTimeInterval = 0;
-        private int _lastTimeInterval = 0;
-
         private float _curEnergyTime = 0;
         private float _lasEnergyTime = 0;
 
@@ -31,8 +28,6 @@ namespace MegaOverhaul.Modules
             Events.GameLoop.UpdateTicked += HalfEnergyUse;
 
             Events.GameLoop.OneSecondUpdateTicked += AddRestEnergy;
-
-            Events.GameLoop.TimeChanged += LogEnergyDif;
         }
 
         public override void Deactivate()
@@ -41,7 +36,6 @@ namespace MegaOverhaul.Modules
             Events.GameLoop.UpdateTicked -= HalfEnergyUse;
 
             Events.GameLoop.OneSecondUpdateTicked -= AddRestEnergy;
-            Events.GameLoop.TimeChanged -= LogEnergyDif;
         }
 
 
@@ -55,17 +49,6 @@ namespace MegaOverhaul.Modules
 
             _curEnergyTime = Game1.player.stamina;
             _lasEnergyTime = _curEnergyTime;
-        }
-
-        /// <summary>
-        /// This is a Debug Function not intended for release
-        /// </summary>
-        public void LogEnergyDif(object sender, TimeChangedEventArgs e)
-        {
-            _lasEnergyTime = _curEnergyTime;
-            _curEnergyTime = _curEnergy;
-
-            ModEntry.LogDebug($"Energy Dif : {_curEnergyTime - _lasEnergyTime}");
         }
 
         /// <summary>
