@@ -9,7 +9,7 @@ namespace MegaOverhaul
     public class Config
     {
         public int EnergyLossDivisor { get; set; } = 2;
-        public int RestEnergyGain { get; set; } = 1;
+        public int RestEnergyGain { get; set; } = 3;
 
     }
 }

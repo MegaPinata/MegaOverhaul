@@ -18,6 +18,9 @@ namespace MegaOverhaul.Modules
         private int _curTimeInterval = 0;
         private int _lastTimeInterval = 0;
 
+        private float _curEnergyTime = 0;
+        private float _lasEnergyTime = 0;
+
         public Energy(ModEntry modEntry) : base(modEntry)
         {
         }
@@ -28,11 +31,17 @@ namespace MegaOverhaul.Modules
             Events.GameLoop.UpdateTicked += HalfEnergyUse;
 
             Events.GameLoop.OneSecondUpdateTicked += AddRestEnergy;
+
+            Events.GameLoop.TimeChanged += LogEnergyDif;
         }
 
         public override void Deactivate()
         {
-            throw new NotImplementedException();
+            Events.GameLoop.DayStarted -= NewDayEnergyCheck;
+            Events.GameLoop.UpdateTicked -= HalfEnergyUse;
+
+            Events.GameLoop.OneSecondUpdateTicked -= AddRestEnergy;
+            Events.GameLoop.TimeChanged -= LogEnergyDif;
         }
 
 
@@ -43,6 +52,20 @@ namespace MegaOverhaul.Modules
         {
             _curEnergy = Game1.player.stamina;
             _lasEnergy = _curEnergy;
+
+            _curEnergyTime = Game1.player.stamina;
+            _lasEnergyTime = _curEnergyTime;
+        }
+
+        /// <summary>
+        /// This is a Debug Function not intended for release
+        /// </summary>
+        public void LogEnergyDif(object sender, TimeChangedEventArgs e)
+        {
+            _lasEnergyTime = _curEnergyTime;
+            _curEnergyTime = _curEnergy;
+
+            ModEntry.LogDebug($"Energy Dif : {_curEnergyTime - _lasEnergyTime}");
         }
 
         /// <summary>
@@ -61,17 +84,11 @@ namespace MegaOverhaul.Modules
             {
                 float diff = _curEnergy - _lasEnergy;
                 Game1.player.stamina += Math.Abs(diff / Config.EnergyLossDivisor);
-
-                // print character energy level if different
-                //ModEntry.LogDebug($"{Game1.player.Name} : {Game1.player.stamina} / {Game1.player.maxStamina.Value} energy. diff:{diff}");
             }
             else if (_curEnergy > _lasEnergy)
             {
                 float diff = _curEnergy - _lasEnergy;
-                //ModEntry.LogDebug($"{Game1.player.Name} : {Game1.player.stamina} / {Game1.player.maxStamina.Value} energy. diff:{diff}");
             }
-            //else
-                //ModEntry.LogDebug($"{Game1.player.Name} : {Game1.player.stamina} / {Game1.player.maxStamina.Value} energy. diff:0");
         }
 
         public void AddRestEnergy(object sender, OneSecondUpdateTickedEventArgs e)
@@ -80,15 +97,49 @@ namespace MegaOverhaul.Modules
             if (!Context.IsWorldReady)
                 return;
 
-            _lastTimeInterval = _curTimeInterval;
-            _curTimeInterval = Game1.gameTimeInterval;
+            int multiplayerOffset = Config.RestEnergyGain - 2;
+            if(multiplayerOffset < 0)
+            {
+                multiplayerOffset = 0;
+            }
 
-            //ModEntry.LogDebug($"_lastTimeInterval: {_lastTimeInterval}\t_curTimeInterval: {_curTimeInterval}");
+            if (Game1.IsMultiplayer)
+            {
+                if (Game1.player.isInBed.Value && Game1.shouldTimePass())
+                {
+                    if (Game1.player.stamina + multiplayerOffset >= Game1.player.maxStamina.Value)
+                    {
+                        Game1.player.stamina = Game1.player.maxStamina.Value;
+                    }
+                    else
+                    {
+                        Game1.player.stamina += multiplayerOffset;
+                    }
+                }
+                if (Game1.player.isSitting.Value && Game1.shouldTimePass())
+                {
+                    if (Game1.player.stamina + Config.RestEnergyGain >= Game1.player.maxStamina.Value)
+                    {
+                        Game1.player.stamina = Game1.player.maxStamina.Value;
+                    }
+                    else
+                    {
+                        Game1.player.stamina += Config.RestEnergyGain;
+                    }
+                }
+            }
+            else
+            {
+                if ((Game1.player.isInBed.Value || Game1.player.isSitting.Value) && Game1.shouldTimePass(true))
+                {
+                    if (Game1.player.stamina + Config.RestEnergyGain >= Game1.player.maxStamina.Value)
+                        Game1.player.stamina = Game1.player.maxStamina.Value;
+                    else
+                        Game1.player.stamina += Config.RestEnergyGain;
+                }
+            }
 
-            if ((Game1.player.isInBed.Value || Game1.player.isSitting.Value) && Game1.player.stamina < Game1.player.MaxStamina && _lastTimeInterval != _curTimeInterval)
-                Game1.player.stamina += Config.RestEnergyGain;
+
         }
-
-       
     }
 }

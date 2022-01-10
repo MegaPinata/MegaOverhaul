@@ -12,7 +12,7 @@ namespace MegaOverhaul
 {
     public class ModEntry : Mod
     {
-        public static Energy energy;
+        public static Energy EnergyMod;
 
         public static Config Config { get; private set; }
         public static IModHelper StaticHelper { get; private set; }
@@ -33,22 +33,28 @@ namespace MegaOverhaul
             ModEntry.StaticMonitor = this.Monitor;
             ModEntry.StaticHelper = this.Helper;
 
-            LoadModules();
+            helper.Events.GameLoop.SaveLoaded += (EventHandler<SaveLoadedEventArgs>)((sender, e) => this.LoadModules());
+            helper.Events.GameLoop.ReturnedToTitle += (EventHandler<ReturnedToTitleEventArgs>)((sender, e) => this.UnloadModules());
 
-            helper.Events.GameLoop.ReturnedToTitle += SaveModOptions;
-
+            //helper.Events.GameLoop.ReturnedToTitle += SaveModOptions;
         }
 
         private void LoadModules()
         {
-            ModEntry.energy = new Energy(this);
-            energy.Activate();
+            ModEntry.EnergyMod = new Energy(this);
+            EnergyMod.Activate();
         }
 
-        private void SaveModOptions(object sender, ReturnedToTitleEventArgs e)
+        private void UnloadModules()
         {
-            Helper.WriteConfig(Config);
-            LogDebug("Config File Written");
+            EnergyMod.Deactivate();
+            ModEntry.EnergyMod = null;
         }
+
+        //private void SaveModOptions(object sender, ReturnedToTitleEventArgs e)
+        //{
+        //    Helper.WriteConfig(Config);
+        //    LogDebug("Config File Written");
+        //}
     }
 }
