@@ -8,8 +8,14 @@ namespace MegaOverhaul
 {
     public class Config
     {
-        public int EnergyLossDivisor { get; set; } = 2;
-        public int RestEnergyGain { get; set; } = 3;
+        public bool EnergyModsActive { get; set; } = true;
 
+        public float EnergyLossDivisor { get; set; } = 2;
+
+        public float RestEnergyGain { get; set; } = 3;
+
+        public bool SpeedBoost_Active { get; set; } = true;
+
+        public int SpeedBoost { get; set; } = 2;
     }
 }
