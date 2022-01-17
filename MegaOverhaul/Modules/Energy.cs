@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using StardewValley;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using MegaOverhaul.Modules.Multiplayer;
 
 namespace MegaOverhaul.Modules
 {
@@ -45,24 +46,33 @@ namespace MegaOverhaul.Modules
 
         public void OnDayStart(object sender, DayStartedEventArgs e)
         {
-            InitValues();
+            if (Game1.player.IsMainPlayer)
+                InitValues(Config);
+            else
+                InitValues(ModEntry.MultiConfig);
         }
 
-        public void InitValues()
+        public void InitValues(Config config)
         {
-            _multiplayerOffset = Config.RestEnergyGain - 2;
+            _multiplayerOffset = config.RestEnergyGain - 2;
             if (_multiplayerOffset < 0)
                 _multiplayerOffset = 0;
 
 
-            _updateInterval = (float)Math.Floor(60 / Config.RestEnergyGain);
+            _updateInterval = (float)Math.Floor(60 / config.RestEnergyGain);
             _multiplayerUpdate = _multiplayerOffset / (60 / _updateInterval);
-            _singleplayerUpdate = Config.RestEnergyGain / (60 / _updateInterval);
+            _singleplayerUpdate = config.RestEnergyGain / (60 / _updateInterval);
 
-            ModEntry.LogDebug($"RestEnergyGain: {Config.RestEnergyGain}");
+            ModEntry.LogDebug($"RestEnergyGain: {config.RestEnergyGain}");
             ModEntry.LogDebug($"_ui: {_updateInterval}");
             ModEntry.LogDebug($"_mu: {_multiplayerUpdate}");
             ModEntry.LogDebug($"_su: {_singleplayerUpdate}");
+        }
+
+        public void InitValues(MultiConfig multiConfig)
+        {
+            Config config = new Config(multiConfig);
+            InitValues(Config);
         }
 
         /// <summary>
@@ -97,14 +107,8 @@ namespace MegaOverhaul.Modules
         public void AddRestEnergy(object sender, UpdateTickedEventArgs e)
         {
             // ignore if player hasn't loaded a save yet
-            if (!Context.IsWorldReady)
+            if (!Context.IsWorldReady && (uint)_updateInterval == 0)
                 return;
-
-            if ((uint)_updateInterval == 0)
-            {
-                Monitor.LogOnce("Divide 0", LogLevel.Error);
-                return;
-            }
 
             if (!e.IsMultipleOf((uint)_updateInterval))
                 return;

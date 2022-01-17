@@ -6,6 +6,7 @@ using StardewValley;
 using StardewValley.GameData;
 using Netcode;
 using MegaOverhaul.Modules;
+using MegaOverhaul.Modules.Multiplayer;
 using MegaOverhaul.ConfigUI;
 
 
@@ -15,8 +16,10 @@ namespace MegaOverhaul
     {
         public static Energy EnergyMod;
         public static SpeedBoost SpeedBoostMod;
+        public static MultiConfigHandler MultiConfigHandler;
 
         public Config Config { get; private set; } = new Config();
+        public static MultiConfig MultiConfig { get; set; } = new MultiConfig();
         public static IModHelper StaticHelper { get; private set; }
         public static IMonitor StaticMonitor { get; private set; }
 
@@ -36,7 +39,6 @@ namespace MegaOverhaul
             StaticHelper = this.Helper;
 
             helper.Events.GameLoop.GameLaunched += (EventHandler<GameLaunchedEventArgs>)((sender, e) => this.LoadModules());
-
             helper.Events.GameLoop.GameLaunched += SetupConfigUI;
 
             //helper.Events.GameLoop.ReturnedToTitle += SaveModOptions;
@@ -46,10 +48,12 @@ namespace MegaOverhaul
         {
             EnergyMod = new Energy(this);
             SpeedBoostMod = new SpeedBoost(this);
+            MultiConfigHandler = new MultiConfigHandler(this);
             if(Config.EnergyModsActive)
                 EnergyMod.Activate();
             if(Config.SpeedBoost_Active)
                 SpeedBoostMod.Activate();
+            MultiConfigHandler.Activate();
         }
 
         private void UnloadModules()
@@ -140,25 +144,31 @@ namespace MegaOverhaul
         {
             if (obj is float)
             {
-                if (str.Equals("configMenu.RestEnergyGainVal"))
-                    ModEntry.EnergyMod.InitValues();
+                if (str.Equals("configMenu.RestEnergyGainVal") && MultiConfig.IsMainPlayer)
+                {
+                    ModEntry.EnergyMod.InitValues(Config);
+                    ModEntry.MultiConfigHandler.SendClientConfig();
+                }
 
-                if (str.Equals("configMenu.SpeedBoostVal"))
+                if (str.Equals("configMenu.SpeedBoostVal") && MultiConfig.IsMainPlayer)
+                {
                     ModEntry.SpeedBoostMod.ResetSpeedBoost();
+                    ModEntry.MultiConfigHandler.SendClientConfig();
+                }
             }
             if (obj is bool)
             {
-                if (str.Equals("configMenu.EnergyMods_Active"))
+                if (str.Equals("configMenu.EnergyMods_Active") && MultiConfig.IsMainPlayer)
                 {
                     if ((bool)obj)
                     {
                         EnergyMod.Activate();
-                        EnergyMod.InitValues();
+                        EnergyMod.InitValues(Config);
                     }
                     else
                         EnergyMod.Deactivate();
                 }
-                if (str.Equals("configMenu.SpeedBoostActive"))
+                if (str.Equals("configMenu.SpeedBoostActive") && MultiConfig.IsMainPlayer)
                 {
                     if ((bool)obj)
                         SpeedBoostMod.Activate();
