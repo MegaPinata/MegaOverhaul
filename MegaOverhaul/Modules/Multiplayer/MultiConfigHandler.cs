@@ -43,7 +43,7 @@ namespace MegaOverhaul.Modules.Multiplayer
         {
             if (ModEntry.MultiConfig.IsMainPlayer)
             {
-                ModEntry.MultiConfig.setMultiConfig(Config);
+                ModEntry.MultiConfig.set(ModEntry.Config);
 
                 ModEntry.LogDebug($"EnergyModsActive: {ModEntry.MultiConfig.EnergyModsActive}");
                 ModEntry.LogDebug($"EnergyLossDivisor: {ModEntry.MultiConfig.EnergyLossDivisor}");
@@ -68,6 +68,8 @@ namespace MegaOverhaul.Modules.Multiplayer
 
         public void SendClientConfig()
         {
+            ModEntry.MultiConfig.set(ModEntry.Config);
+
             ModEntry.StaticHelper.Multiplayer.SendMessage<MultiConfig>(
                         message: ModEntry.MultiConfig,
                         messageType: "SendClientConfig",
@@ -85,12 +87,15 @@ namespace MegaOverhaul.Modules.Multiplayer
                 {
                     if (!ModEntry.MultiConfig.IsMainPlayer)
                     {
-                        ModEntry.MultiConfig.setMultiConfig(e.ReadAs<MultiConfig>());
+                        ModEntry.MultiConfig.set(e.ReadAs<MultiConfig>());
                         ModEntry.LogDebug($"EnergyModsActive: {ModEntry.MultiConfig.EnergyModsActive}");
                         ModEntry.LogDebug($"EnergyLossDivisor: {ModEntry.MultiConfig.EnergyLossDivisor}");
                         ModEntry.LogDebug($"RestEnergyGain: {ModEntry.MultiConfig.RestEnergyGain}");
                         ModEntry.LogDebug($"SpeedBoostActive: {ModEntry.MultiConfig.SpeedBoost_Active}");
                         ModEntry.LogDebug($"SpeedBoost: {ModEntry.MultiConfig.SpeedBoost}");
+
+                        if (ModEntry.EnergyMod != null)
+                            ModEntry.EnergyMod.InitValues();
                     }
                 }
             }

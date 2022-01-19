@@ -16,10 +16,11 @@ namespace MegaOverhaul
     {
         public static Energy EnergyMod;
         public static SpeedBoost SpeedBoostMod;
-        public static MultiConfigHandler MultiConfigHandler;
 
         public Config Config { get; private set; } = new Config();
         public static MultiConfig MultiConfig { get; set; } = new MultiConfig();
+        public static MultiConfigHandler MultiConfigHandler;
+
         public static IModHelper StaticHelper { get; private set; }
         public static IMonitor StaticMonitor { get; private set; }
 
@@ -40,8 +41,6 @@ namespace MegaOverhaul
 
             helper.Events.GameLoop.GameLaunched += (EventHandler<GameLaunchedEventArgs>)((sender, e) => this.LoadModules());
             helper.Events.GameLoop.GameLaunched += SetupConfigUI;
-
-            //helper.Events.GameLoop.ReturnedToTitle += SaveModOptions;
         }
 
         private void LoadModules()
@@ -144,16 +143,19 @@ namespace MegaOverhaul
         {
             if (obj is float)
             {
+                if (str.Equals("configMenu.EnergyLossDivisorVal") && MultiConfig.IsMainPlayer)
+                {
+                    ModEntry.EnergyMod.valChanged = true;
+                }
+
                 if (str.Equals("configMenu.RestEnergyGainVal") && MultiConfig.IsMainPlayer)
                 {
-                    ModEntry.EnergyMod.InitValues(Config);
-                    ModEntry.MultiConfigHandler.SendClientConfig();
+                    ModEntry.EnergyMod.valChanged = true;
                 }
 
                 if (str.Equals("configMenu.SpeedBoostVal") && MultiConfig.IsMainPlayer)
                 {
                     ModEntry.SpeedBoostMod.ResetSpeedBoost();
-                    ModEntry.MultiConfigHandler.SendClientConfig();
                 }
             }
             if (obj is bool)
@@ -163,7 +165,7 @@ namespace MegaOverhaul
                     if ((bool)obj)
                     {
                         EnergyMod.Activate();
-                        EnergyMod.InitValues(Config);
+                        EnergyMod.valChanged = true;
                     }
                     else
                         EnergyMod.Deactivate();

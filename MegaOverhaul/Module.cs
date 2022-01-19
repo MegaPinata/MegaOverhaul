@@ -1,5 +1,6 @@
 ﻿using StardewModdingAPI;
 using StardewModdingAPI.Events;
+using MegaOverhaul.Modules.Multiplayer;
 
 namespace MegaOverhaul
 {
@@ -8,6 +9,8 @@ namespace MegaOverhaul
         public ModEntry ModEntry { get; }
 
         public Config Config => ModEntry.Config;
+
+        public MultiConfig MultiConfig => ModEntry.MultiConfig;
 
         public IMonitor Monitor => this.ModEntry.Monitor;
 

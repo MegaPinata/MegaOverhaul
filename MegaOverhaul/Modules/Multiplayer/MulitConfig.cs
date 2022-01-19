@@ -10,7 +10,7 @@ namespace MegaOverhaul.Modules.Multiplayer
     {
         public bool IsMainPlayer { get; set; }
 
-        public void setMultiConfig(Config config)
+        public void set(Config config)
         {
             this.EnergyModsActive = config.EnergyModsActive;
             this.SpeedBoost_Active = config.SpeedBoost_Active;
@@ -20,7 +20,7 @@ namespace MegaOverhaul.Modules.Multiplayer
             this.SpeedBoost = config.SpeedBoost;
         }
 
-        public void setMultiConfig(MultiConfig hostConfig) {
+        public void set(MultiConfig hostConfig) {
             this.EnergyModsActive = hostConfig.EnergyModsActive;
             this.SpeedBoost_Active = hostConfig.SpeedBoost_Active;
 
